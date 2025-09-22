@@ -10,7 +10,7 @@ struct DataView: View {
 
     @State private var readingCountdown: Int = 0
 
-    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    @State private var countdownTask: Task<Void, Never>?
 
 
     var body: some View {
@@ -28,14 +28,6 @@ struct DataView: View {
                     .fixedSize()
                     // .font(Font.caption.monospacedDigit())
                     .foregroundColor(.orange)
-                    .onReceive(timer) { _ in
-                        // workaround: watchOS fails converting the interval to an Int32
-                        if app.lastConnectionDate == Date.distantPast {
-                            readingCountdown = 0
-                        } else {
-                            readingCountdown = settings.readingInterval * 60 - Int(Date().timeIntervalSince(app.lastConnectionDate))
-                        }
-                    }
             }
 
 
@@ -178,6 +170,43 @@ struct DataView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         // .font(.system(.footnote, design: .monospaced)).foregroundColor(Color(.lightGray))
         .font(.footnote)
+        .onAppear {
+            startCountdownTask()
+        }
+        .onDisappear {
+            stopCountdownTask()
+        }
+        .onChange(of: app.lastConnectionDate) { _ in
+            Task { await updateReadingCountdown() }
+        }
+    }
+
+    @MainActor
+    private func updateReadingCountdown() {
+        readingCountdown = calculateReadingCountdown(
+            lastConnectionDate: app.lastConnectionDate,
+            readingIntervalMinutes: settings.readingInterval
+        )
+    }
+
+    private func startCountdownTask() {
+        countdownTask?.cancel()
+        countdownTask = Task {
+            await updateReadingCountdown()
+            while !Task.isCancelled {
+                do {
+                    try await Task.sleep(nanoseconds: 1_000_000_000)
+                } catch {
+                    break
+                }
+                await updateReadingCountdown()
+            }
+        }
+    }
+
+    private func stopCountdownTask() {
+        countdownTask?.cancel()
+        countdownTask = nil
     }
 }
 

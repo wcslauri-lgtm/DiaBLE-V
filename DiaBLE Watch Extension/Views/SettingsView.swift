@@ -7,9 +7,6 @@ struct SettingsView: View {
     @EnvironmentObject var history: History
     @EnvironmentObject var settings: Settings
 
-    @State private var showingCalendarPicker = false
-
-
     var body: some View {
 
         VStack {

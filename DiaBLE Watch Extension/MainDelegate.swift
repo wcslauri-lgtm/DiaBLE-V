@@ -19,6 +19,9 @@ public class MainDelegate: NSObject, WKExtendedRuntimeSessionDelegate {
     var nightscout: Nightscout?
     //    var eventKit: EventKit?
 
+    private var alarmPlayer: AVAudioPlayer?
+    private var alarmPlaybackTask: Task<Void, Never>?
+
 
     override init() {
 
@@ -79,15 +82,17 @@ public class MainDelegate: NSObject, WKExtendedRuntimeSessionDelegate {
 
 
     public func log(_ msg: String) {
-        if settings.logging || msg.hasPrefix("Log") {
-            DispatchQueue.main.async {
-                if self.settings.reversedLog {
-                    self.log.text = "\(msg)\n \n\(self.log.text)"
-                } else {
-                    self.log.text.append("\n \n\(msg)")
-                }
-                print(msg)
+        guard settings.logging || msg.hasPrefix("Log") else {
+            return
+        }
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            if self.settings.reversedLog {
+                self.log.text = "\(msg)\n \n\(self.log.text)"
+            } else {
+                self.log.text.append("\n \n\(msg)")
             }
+            print(msg)
         }
     }
 
@@ -99,14 +104,15 @@ public class MainDelegate: NSObject, WKExtendedRuntimeSessionDelegate {
     }
 
     public func status(_ text: String) {
-        DispatchQueue.main.async {
-            self.app.status = text
+        Task { @MainActor [weak self] in
+            self?.app.status = text
         }
     }
 
     public func errorStatus(_ text: String) {
-        if !self.app.status.contains(text) {
-            DispatchQueue.main.async {
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            if !self.app.status.contains(text) {
                 self.app.status.append("\n\(text)")
             }
         }
@@ -129,29 +135,80 @@ public class MainDelegate: NSObject, WKExtendedRuntimeSessionDelegate {
     public func playAlarm() {
         let currentGlucose = app.currentGlucose
         if !settings.mutedAudio {
-            do {
-                try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playback, options: [.duckOthers])
-                try AVAudioSession.sharedInstance().setActive(true)
-            } catch {
-                log("Audio Session error: \(error)")
+            alarmPlaybackTask?.cancel()
+            Task { @MainActor [weak self] in
+                self?.alarmPlayer?.stop()
+                self?.alarmPlayer = nil
             }
             let soundName = currentGlucose > Int(settings.alarmHigh) ? "alarm_high" : "alarm_low"
-            let audioPlayer = try! AVAudioPlayer(contentsOf: URL(fileURLWithPath: Bundle.main.path(forResource: soundName, ofType: "mp3")!), fileTypeHint: "mp3")
-            audioPlayer.play()
-            _ = Timer.scheduledTimer(withTimeInterval: 4, repeats: false) {
-                _ in audioPlayer.stop()
+            alarmPlaybackTask = Task { [weak self] in
+                guard let self else { return }
+                defer { self.alarmPlaybackTask = nil }
+                let audioSession = AVAudioSession.sharedInstance()
+                var didActivateAudioSession = false
                 do {
-                    try AVAudioSession.sharedInstance().setActive(false)
-                } catch { }
+                    try audioSession.setCategory(AVAudioSession.Category.playback, options: [.duckOthers])
+                    try audioSession.setActive(true)
+                    didActivateAudioSession = true
+                } catch {
+                    self.log("Audio Session error: \(error)")
+                }
+                guard let soundURL = Bundle.main.url(forResource: soundName, withExtension: "mp3") else {
+                    self.log("Missing alarm sound: \(soundName).mp3")
+                    if didActivateAudioSession {
+                        do {
+                            try audioSession.setActive(false)
+                        } catch {
+                            self.log("Audio Session error: \(error)")
+                        }
+                    }
+                    return
+                }
+                do {
+                    let player = try AVAudioPlayer(contentsOf: soundURL, fileTypeHint: "mp3")
+                    await MainActor.run {
+                        self.alarmPlayer = player
+                        self.alarmPlayer?.play()
+                    }
+                    do {
+                        try await Task.sleep(nanoseconds: 4_000_000_000)
+                    } catch is CancellationError {
+                        // A subsequent alarm interrupted this playback
+                    } catch {
+                        self.log("Alarm playback delay error: \(error)")
+                    }
+                    await MainActor.run {
+                        self.alarmPlayer?.stop()
+                        self.alarmPlayer = nil
+                    }
+                } catch {
+                    self.log("Failed to load alarm sound \(soundName): \(error.localizedDescription)")
+                }
+                if didActivateAudioSession {
+                    do {
+                        try audioSession.setActive(false)
+                    } catch {
+                        self.log("Audio Session error: \(error)")
+                    }
+                }
             }
         }
         if !settings.disabledNotifications {
             let hapticDirection: WKHapticType = currentGlucose > Int(settings.alarmHigh) ? .directionUp : .directionDown
-            WKInterfaceDevice.current().play(hapticDirection)
             let times = currentGlucose > Int(settings.alarmHigh) ? 3 : 4
             let pause = times == 3 ? 1.0 : 5.0 / 6
-            for s in 0 ..< times {
-                DispatchQueue.main.asyncAfter(deadline: .now() + Double(s) * pause) {
+            Task { @MainActor in
+                WKInterfaceDevice.current().play(hapticDirection)
+                for index in 0 ..< times {
+                    if index > 0 {
+                        do {
+                            try await Task.sleep(nanoseconds: UInt64((pause * 1_000_000_000).rounded()))
+                        } catch is CancellationError {
+                            break
+                        } catch {
+                            break
+                        }
+                    }
                     WKInterfaceDevice.current().play(.notification)
                 }
             }

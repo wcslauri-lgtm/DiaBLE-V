@@ -87,10 +87,11 @@
 		C5E9C75F2444969000D52B32 /* alarm_high.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = C513933023B8EB7600CB245F /* alarm_high.mp3 */; };
 		C5E9C7602444969400D52B32 /* alarm_low.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = C5C84481241B884F009D3EAF /* alarm_low.mp3 */; };
 		C5E9C7612444969800D52B32 /* alarm_signal_loss.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = C5908FB72428E6B600CF6C83 /* alarm_signal_loss.mp3 */; };
-		C5E9C763244496C800D52B32 /* MainDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5E9C762244496C800D52B32 /* MainDelegate.swift */; };
-		C5E9C7672444A13600D52B32 /* Console.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5E9C7662444A13600D52B32 /* Console.swift */; };
-		C5F329D4244998230053A8FB /* Nightscout.swift in Sources */ = {isa = PBXBuildFile; fileRef = C53C76EC23D9AFD700B59A98 /* Nightscout.swift */; };
-		C5FB2EF323A2794D0046F4F9 /* MainDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5FB2EF223A2794D0046F4F9 /* MainDelegate.swift */; };
+                C5E9C763244496C800D52B32 /* MainDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5E9C762244496C800D52B32 /* MainDelegate.swift */; };
+                C5E9C7672444A13600D52B32 /* Console.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5E9C7662444A13600D52B32 /* Console.swift */; };
+                C5F329D4244998230053A8FB /* Nightscout.swift in Sources */ = {isa = PBXBuildFile; fileRef = C53C76EC23D9AFD700B59A98 /* Nightscout.swift */; };
+                C5F9E32229F9B12300ABCDEF /* CountdownHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5F9E32129F9B12300ABCDEF /* CountdownHelper.swift */; };
+                C5FB2EF323A2794D0046F4F9 /* MainDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5FB2EF223A2794D0046F4F9 /* MainDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -199,8 +200,9 @@
 		C5E1014223A2774D00678DF6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C5E1014523A2774D00678DF6 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		C5E1014A23A2774D00678DF6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		C5E9C762244496C800D52B32 /* MainDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainDelegate.swift; sourceTree = "<group>"; };
-		C5E9C7662444A13600D52B32 /* Console.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Console.swift; sourceTree = "<group>"; };
+            C5E9C762244496C800D52B32 /* MainDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainDelegate.swift; sourceTree = "<group>"; };
+            C5F9E32129F9B12300ABCDEF /* CountdownHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers/CountdownHelper.swift; sourceTree = "<group>"; };
+            C5E9C7662444A13600D52B32 /* Console.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Console.swift; sourceTree = "<group>"; };
 		C5FB2EF223A2794D0046F4F9 /* MainDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -258,11 +260,12 @@
 			path = "DiaBLE Watch";
 			sourceTree = "<group>";
 		};
-		C58507AB23C50BF40079539D /* DiaBLE Watch Extension */ = {
-			isa = PBXGroup;
-			children = (
-				C5E9C7652444A10A00D52B32 /* Views */,
-				C5E9C762244496C800D52B32 /* MainDelegate.swift */,
+                C58507AB23C50BF40079539D /* DiaBLE Watch Extension */ = {
+                        isa = PBXGroup;
+                        children = (
+                                C5E9C7652444A10A00D52B32 /* Views */,
+                                C5F9E32329F9B12300ABCDEF /* Helpers */,
+                                C5E9C762244496C800D52B32 /* MainDelegate.swift */,
 				C58507B223C50BF40079539D /* NotificationController.swift */,
 				C58507B423C50BF40079539D /* NotificationView.swift */,
 				C58507B623C50BF40079539D /* ComplicationController.swift */,
@@ -272,9 +275,17 @@
 				C58507BE23C50BF40079539D /* PushNotificationPayload.apns */,
 				C58507BA23C50BF40079539D /* Preview Content */,
 			);
-			path = "DiaBLE Watch Extension";
-			sourceTree = "<group>";
-		};
+                        path = "DiaBLE Watch Extension";
+                        sourceTree = "<group>";
+                };
+                C5F9E32329F9B12300ABCDEF /* Helpers */ = {
+                        isa = PBXGroup;
+                        children = (
+                                C5F9E32129F9B12300ABCDEF /* CountdownHelper.swift */,
+                        );
+                        path = Helpers;
+                        sourceTree = "<group>";
+                };
 		C58507BA23C50BF40079539D /* Preview Content */ = {
 			isa = PBXGroup;
 			children = (
@@ -559,8 +570,9 @@
 				C55A7F9B253F3EBD00423648 /* NFC.swift in Sources */,
 				C5E9C755244495B000D52B32 /* Extensions.swift in Sources */,
 				C528E1812445097400BFDA73 /* Monitor.swift in Sources */,
-				C5E9C7672444A13600D52B32 /* Console.swift in Sources */,
-				C5841EBF26CCD40200922DFC /* Gen2.swift in Sources */,
+                                C5E9C7672444A13600D52B32 /* Console.swift in Sources */,
+                                C5F9E32229F9B12300ABCDEF /* CountdownHelper.swift in Sources */,
+                                C5841EBF26CCD40200922DFC /* Gen2.swift in Sources */,
 				C55B5D16245FCBE50004FE3B /* OnlineView.swift in Sources */,
 				C5E9C763244496C800D52B32 /* MainDelegate.swift in Sources */,
 				C528E1852445A60200BFDA73 /* SettingsView.swift in Sources */,
