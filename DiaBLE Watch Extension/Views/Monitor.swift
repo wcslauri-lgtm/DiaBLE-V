@@ -17,8 +17,8 @@ struct Monitor: View {
     @State private var readingCountdown: Int = 0
     @State private var minutesSinceLastReading: Int = 0
 
-    @State private var timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    @State private var minuteTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
+    @State private var countdownTask: Task<Void, Never>?
+    @State private var minuteTask: Task<Void, Never>?
 
     var body: some View {
 
@@ -32,17 +32,12 @@ struct Monitor: View {
                         if app.lastReadingDate != Date.distantPast {
                             Text(app.lastReadingDate.shortTime).monospacedDigit()
                             Text("\(minutesSinceLastReading) min ago").font(.system(size: 10)).monospacedDigit().lineLimit(1)
-                                .onReceive(minuteTimer) { _ in
-                                    minutesSinceLastReading = Int(Date().timeIntervalSince(app.lastReadingDate)/60)
-                                }
                         } else {
                             Text("---")
                         }
                     }
                     .font(.footnote).frame(maxWidth: .infinity, alignment: .trailing ).foregroundColor(Color(.lightGray))
-                    .onReceive(app.$lastReadingDate) { readingDate in
-                        minutesSinceLastReading = Int(Date().timeIntervalSince(readingDate)/60)
-                    }
+                    
 
                     Text(app.currentGlucose > 0 ? "\(app.currentGlucose.units)" : "---")
                         .font(.system(size: 26, weight: .black)).monospacedDigit()
@@ -84,14 +79,6 @@ struct Monitor: View {
                              "\(readingCountdown) s" : "")
                             .fixedSize()
                             .font(Font.footnote.monospacedDigit()).foregroundColor(.orange)
-                            .onReceive(timer) { _ in
-                                // workaround: watchOS fails converting the interval to an Int32
-                                if app.lastConnectionDate == Date.distantPast {
-                                    readingCountdown = 0
-                                } else {
-                                    readingCountdown = settings.readingInterval * 60 - Int(Date().timeIntervalSince(app.lastConnectionDate))
-                                }
-                            }
                     }
                 }
             }
@@ -190,16 +177,71 @@ struct Monitor: View {
         .buttonStyle(.plain)
         .multilineTextAlignment(.center)
         .onAppear {
-            timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-            minuteTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
-            if app.lastReadingDate != Date.distantPast {
-                minutesSinceLastReading = Int(Date().timeIntervalSince(app.lastReadingDate)/60)
-            }
+            startCountdownTasks()
+            Task { await updateMinutesSinceLastReading() }
+            Task { await updateReadingCountdown() }
         }
         .onDisappear {
-            timer.upstream.connect().cancel()
-            minuteTimer.upstream.connect().cancel()
+            stopCountdownTasks()
         }
+        .onChange(of: app.lastReadingDate) { _ in
+            Task { await updateMinutesSinceLastReading() }
+        }
+        .onChange(of: app.lastConnectionDate) { _ in
+            Task { await updateReadingCountdown() }
+        }
+    }
+
+    @MainActor
+    private func updateReadingCountdown() {
+        readingCountdown = calculateReadingCountdown(
+            lastConnectionDate: app.lastConnectionDate,
+            readingIntervalMinutes: settings.readingInterval
+        )
+    }
+
+    @MainActor
+    private func updateMinutesSinceLastReading() {
+        guard app.lastReadingDate != Date.distantPast else {
+            minutesSinceLastReading = 0
+            return
+        }
+        minutesSinceLastReading = Int(Date().timeIntervalSince(app.lastReadingDate) / 60)
+    }
+
+    private func startCountdownTasks() {
+        countdownTask?.cancel()
+        countdownTask = Task {
+            await updateReadingCountdown()
+            while !Task.isCancelled {
+                do {
+                    try await Task.sleep(nanoseconds: 1_000_000_000)
+                } catch {
+                    break
+                }
+                await updateReadingCountdown()
+            }
+        }
+
+        minuteTask?.cancel()
+        minuteTask = Task {
+            await updateMinutesSinceLastReading()
+            while !Task.isCancelled {
+                do {
+                    try await Task.sleep(nanoseconds: 60_000_000_000)
+                } catch {
+                    break
+                }
+                await updateMinutesSinceLastReading()
+            }
+        }
+    }
+
+    private func stopCountdownTasks() {
+        countdownTask?.cancel()
+        countdownTask = nil
+        minuteTask?.cancel()
+        minuteTask = nil
     }
 }
 
