@@ -281,7 +281,10 @@ struct Details: View {
 
                 Spacer()
 
-            }.edgesIgnoringSafeArea(.bottom).padding(.vertical, -40).offset(y: 40)
+            }
+            .ignoresSafeArea(.container, edges: .bottom)
+            .padding(.vertical, -40)
+            .offset(y: 40)
 
         }
         .navigationTitle("Details")
@@ -303,7 +306,7 @@ struct Details_Preview: PreviewProvider {
             Details()
                 .environmentObject(AppState.test(tab: .monitor))
                 .environmentObject(Settings())
-            NavigationView {
+            NavigationStack {
                 Details()
                     .environmentObject(AppState.test(tab: .monitor))
                     .environmentObject(Settings())

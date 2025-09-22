@@ -11,7 +11,7 @@ struct ContentView: View {
     @State var isMonitorActive = false
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ScrollView {
                 VStack(spacing: -4) {
                     HStack(spacing: 10) {
@@ -62,7 +62,7 @@ struct ContentView: View {
             }
             .navigationTitle("DiaBLE  \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String)")
         }
-        .edgesIgnoringSafeArea([.bottom])
+        .ignoresSafeArea(.container, edges: .bottom)
     }
 }
 

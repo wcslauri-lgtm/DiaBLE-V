@@ -174,7 +174,7 @@ struct Console: View {
 
             }.font(.footnote)
         }
-        .edgesIgnoringSafeArea(.bottom)
+        .ignoresSafeArea(.container, edges: .bottom)
         .navigationTitle("Console")
     }
 }

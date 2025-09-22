@@ -67,7 +67,7 @@ struct OnlineView: View {
             } }
         }
         .navigationTitle("Online")
-        .edgesIgnoringSafeArea([.bottom])
+        .ignoresSafeArea(.container, edges: .bottom)
         .buttonStyle(.plain)
         .foregroundColor(.cyan)
 
