@@ -186,7 +186,7 @@ struct Monitor: View {
         }
         // .navigationTitle("Monitor")
         .navigationBarHidden(true)
-        .edgesIgnoringSafeArea([.top, .bottom])
+        .ignoresSafeArea(.container, edges: [.top, .bottom])
         .buttonStyle(.plain)
         .multilineTextAlignment(.center)
         .onAppear {

@@ -139,7 +139,7 @@ struct SettingsView: View {
             }.padding(.top, 6)
 
         }
-        .edgesIgnoringSafeArea([.top, .bottom])
+        .ignoresSafeArea(.container, edges: [.top, .bottom])
         .navigationTitle("Settings")
         .font(Font.body.monospacedDigit())
         .buttonStyle(.plain)

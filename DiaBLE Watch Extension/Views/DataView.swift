@@ -174,7 +174,7 @@ struct DataView: View {
 
         }
         .navigationTitle("Data")
-        .edgesIgnoringSafeArea([.bottom])
+        .ignoresSafeArea(.container, edges: .bottom)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         // .font(.system(.footnote, design: .monospaced)).foregroundColor(Color(.lightGray))
         .font(.footnote)
