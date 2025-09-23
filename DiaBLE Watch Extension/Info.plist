@@ -28,8 +28,8 @@
 	<dict>
 		<key>NSExtensionAttributes</key>
 		<dict>
-			<key>WKAppBundleIdentifier</key>
-			<string>name.soranzio.guido.diable.DiaBLE.watchkitapp</string>
+                        <key>WKAppBundleIdentifier</key>
+                        <string>$(WATCH_APP_BUNDLE_IDENTIFIER)</string>
 		</dict>
 		<key>NSExtensionPointIdentifier</key>
 		<string>com.apple.watchkit</string>
