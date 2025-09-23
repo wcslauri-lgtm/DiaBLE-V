@@ -648,7 +648,7 @@
 				IBSC_MODULE = DiaBLE_Watch_Extension;
 				INFOPLIST_FILE = "DiaBLE Watch/Info.plist";
 				MARKETING_VERSION = 0.0.1;
-				PRODUCT_BUNDLE_IDENTIFIER = name.soranzio.guido.diable.DiaBLE.watchkitapp;
+                                PRODUCT_BUNDLE_IDENTIFIER = $(WATCH_APP_BUNDLE_IDENTIFIER);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -669,7 +669,7 @@
 				IBSC_MODULE = DiaBLE_Watch_Extension;
 				INFOPLIST_FILE = "DiaBLE Watch/Info.plist";
 				MARKETING_VERSION = 0.0.1;
-				PRODUCT_BUNDLE_IDENTIFIER = name.soranzio.guido.diable.DiaBLE.watchkitapp;
+                                PRODUCT_BUNDLE_IDENTIFIER = $(WATCH_APP_BUNDLE_IDENTIFIER);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -696,7 +696,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 0.0.1;
-				PRODUCT_BUNDLE_IDENTIFIER = name.soranzio.guido.diable.DiaBLE.watchkitapp.watchkitextension;
+                                PRODUCT_BUNDLE_IDENTIFIER = $(WATCH_APP_BUNDLE_IDENTIFIER).watchkitextension;
 				PRODUCT_NAME = "${TARGET_NAME}";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -723,7 +723,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 0.0.1;
-				PRODUCT_BUNDLE_IDENTIFIER = name.soranzio.guido.diable.DiaBLE.watchkitapp.watchkitextension;
+                                PRODUCT_BUNDLE_IDENTIFIER = $(WATCH_APP_BUNDLE_IDENTIFIER).watchkitextension;
 				PRODUCT_NAME = "${TARGET_NAME}";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -790,11 +790,12 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-			};
-			name = Debug;
-		};
-		C5E1016223A2774D00678DF6 /* Release */ = {
+                                SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+                                WATCH_APP_BUNDLE_IDENTIFIER = name.soranzio.guido.diable.DiaBLE.watchkitapp;
+                        };
+                        name = Debug;
+                };
+                C5E1016223A2774D00678DF6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -844,9 +845,10 @@
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				VALIDATE_PRODUCT = YES;
-			};
+                                SWIFT_OPTIMIZATION_LEVEL = "-O";
+                                WATCH_APP_BUNDLE_IDENTIFIER = name.soranzio.guido.diable.DiaBLE.watchkitapp;
+                                VALIDATE_PRODUCT = YES;
+                        };
 			name = Release;
 		};
 		C5E1016423A2774D00678DF6 /* Debug */ = {
