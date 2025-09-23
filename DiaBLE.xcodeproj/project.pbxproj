@@ -201,7 +201,7 @@
 		C5E1014523A2774D00678DF6 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		C5E1014A23A2774D00678DF6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
             C5E9C762244496C800D52B32 /* MainDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainDelegate.swift; sourceTree = "<group>"; };
-            C5F9E32129F9B12300ABCDEF /* CountdownHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers/CountdownHelper.swift; sourceTree = "<group>"; };
+           C5F9E32129F9B12300ABCDEF /* CountdownHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownHelper.swift; sourceTree = "<group>"; };
             C5E9C7662444A13600D52B32 /* Console.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Console.swift; sourceTree = "<group>"; };
 		C5FB2EF223A2794D0046F4F9 /* MainDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
