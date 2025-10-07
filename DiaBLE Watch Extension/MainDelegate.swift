@@ -388,20 +388,48 @@ public class MainDelegate: NSObject, WKExtendedRuntimeSessionDelegate {
         }
 
         // TODO:
-        extendedSession.start(at: max(app.lastReadingDate, app.lastConnectionDate) + Double(settings.readingInterval * 60) - 5.0)
+        // Schedule next extended session for background updates
+        let nextSessionDate = max(app.lastReadingDate, app.lastConnectionDate) + Double(settings.readingInterval * 60) - 5.0
+        
+        // Only schedule if the date is in the future
+        if nextSessionDate > Date() {
+            // Invalidate any existing session before starting a new one
+            if extendedSession.state == .running || extendedSession.state == .scheduled {
+                extendedSession.invalidate()
+                extendedSession = WKExtendedRuntimeSession()
+                extendedSession.delegate = self
+            }
+            
+            extendedSession.start(at: nextSessionDate)
+            debugLog("Extended session scheduled for \(nextSessionDate)")
+        } else {
+            debugLog("Extended session not scheduled: calculated date is in the past")
+        }
     }
 
 
     public func extendedRuntimeSessionDidStart(_ extendedRuntimeSession: WKExtendedRuntimeSession) {
         debugLog("extended session did start")
+        // Session started successfully, app can continue running in background
     }
 
     public func extendedRuntimeSessionWillExpire(_ extendedRuntimeSession: WKExtendedRuntimeSession) {
-        debugLog("extended session wiil expire")
+        debugLog("extended session will expire")
+        // Session is about to expire, perform cleanup if needed
     }
 
     public func extendedRuntimeSession(_ extendedRuntimeSession: WKExtendedRuntimeSession, didInvalidateWith reason: WKExtendedRuntimeSessionInvalidationReason, error: Error?) {
         let errorDescription = error != nil ? error!.localizedDescription : "undefined"
         debugLog("extended session did invalidate: reason: \(reason), error: \(errorDescription)")
+        
+        // Handle invalidation reasons
+        switch reason {
+        case .resigned:
+            debugLog("Extended session resigned")
+        case .expired:
+            debugLog("Extended session expired")
+        @unknown default:
+            debugLog("Extended session invalidated with unknown reason")
+        }
     }
 }
