@@ -21,7 +21,14 @@ Still too early to decide the final design (but I really like already the evil l
 <br><br>
 
 
-The project started as a single script for the iPad Swift Playgrounds to test the workings of the several troublesome BLE devices I bought, mainly the **Bubble** and the **MiaoMiao**. It was then quickly converted to an app when the Libre 2 came out at last by using a standard Xcode template: it should compile fine without external dependencies just after changing the _Bundle Identifier_ in the _General_ panel of the _Targets_ settings and the _Team_ in the _Signing and Capabilities_ tab of Xcode -- Spike and xDrip4iO5 users know already very well what that means... ;-)
+The project started as a single script for the iPad Swift Playgrounds to test the workings of the several troublesome BLE devices I bought, mainly the **Bubble** and the **MiaoMiao** (including **MiaoMiao 2**). It was then quickly converted to an app when the Libre 2 came out at last by using a standard Xcode template: it should compile fine without external dependencies just after changing the _Bundle Identifier_ in the _General_ panel of the _Targets_ settings and the _Team_ in the _Signing and Capabilities_ tab of Xcode -- Spike and xDrip4iO5 users know already very well what that means... ;-)
+
+### Supported Transmitters
+
+* **Abbott Libre 2 / 3** (direct BLE connection)
+* **MiaoMiao** and **MiaoMiao 2**
+* **Bubble**
+* **BluCon**
 
 I am targeting only the latest betas of Xcode and iOS. The new `async / await` and *actors* introduced in Swift 5.5 and iOS 15 probably would require a total rewrite of DiaBLE's foundations, as well as the enhanced *Gen2* protocols adopted by the recent Libre 2 Sense/US/CA/AU which haven't been reversed yet.
 
