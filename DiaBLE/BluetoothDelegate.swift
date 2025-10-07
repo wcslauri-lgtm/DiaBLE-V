@@ -198,6 +198,62 @@ class BluetoothDelegate: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
 
     public func centralManager(_ manager: CBCentralManager, willRestoreState dict: [String: Any]) {
         log("Bluetooth: will restore state to \(dict.debugDescription)")
+        
+        // Handle restored peripherals
+        if let peripherals = dict[CBCentralManagerRestoredStatePeripheralsKey] as? [CBPeripheral] {
+            log("Bluetooth: restoring \(peripherals.count) peripheral(s)")
+            
+            for peripheral in peripherals {
+                log("Bluetooth: restored peripheral: \(peripheral.name ?? "unnamed"), identifier: \(peripheral.identifier), state: \(peripheral.state.description)")
+                
+                // Re-establish device connections
+                if peripheral.state == .connected {
+                    // Peripheral is still connected, set it as the active device
+                    peripheral.delegate = self
+                    
+                    // Try to identify the device type and recreate the appropriate device object
+                    if let name = peripheral.name {
+                        if name.lowercased().hasPrefix("abbott") {
+                            app.transmitter = Abbott(peripheral: peripheral, main: main)
+                            app.device = app.transmitter
+                        } else if name.lowercased().hasPrefix("blu") {
+                            app.transmitter = BluCon(peripheral: peripheral, main: main)
+                            app.device = app.transmitter
+                        } else if name.prefix(6) == "Bubble" {
+                            app.transmitter = Bubble(peripheral: peripheral, main: main)
+                            app.device = app.transmitter
+                        } else if name.matches("miaomiao") {
+                            app.transmitter = MiaoMiao(peripheral: peripheral, main: main)
+                            app.device = app.transmitter
+                        } else {
+                            app.device = Device(peripheral: peripheral, main: main)
+                            app.device.name = name
+                        }
+                        
+                        app.device.state = peripheral.state
+                        app.deviceState = peripheral.state.description.capitalized
+                        
+                        // Rediscover services to re-establish characteristics
+                        peripheral.discoverServices(nil)
+                        log("Bluetooth: re-establishing connection to \(name)")
+                    }
+                } else if peripheral.state == .connecting {
+                    // Peripheral is reconnecting, wait for connection
+                    peripheral.delegate = self
+                    log("Bluetooth: peripheral is reconnecting: \(peripheral.name ?? "unnamed")")
+                }
+            }
+        }
+        
+        // Handle restored scan services
+        if let services = dict[CBCentralManagerRestoredStateScanServicesKey] as? [CBUUID] {
+            log("Bluetooth: restored scan services: \(services)")
+        }
+        
+        // Handle restored scan options
+        if let options = dict[CBCentralManagerRestoredStateScanOptionsKey] as? [String: Any] {
+            log("Bluetooth: restored scan options: \(options)")
+        }
     }
 
 
