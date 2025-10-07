@@ -43,8 +43,13 @@ class MiaoMiao: Transmitter {
 
     override init(peripheral: CBPeripheral?, main: MainDelegate) {
         super.init(peripheral: peripheral!, main: main)
-        if let peripheral = peripheral, peripheral.name!.contains("miaomiao2") {
-            name += " 2"
+        if let peripheral = peripheral {
+            let peripheralNameLower = peripheral.name!.lowercased()
+            if peripheralNameLower.contains("miaomiao3") {
+                name += " 3"
+            } else if peripheralNameLower.contains("miaomiao2") {
+                name += " 2"
+            }
         }
     }
 
